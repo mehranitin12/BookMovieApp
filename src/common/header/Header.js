@@ -134,7 +134,7 @@ const Header = function (props) {
     }
   }
 
-  // Sign-up functionality - implementation
+  // Register functionality - implementation
   const handleSubmitSignup = async () => {
     const params = {
       email_address: email,
@@ -161,11 +161,11 @@ const Header = function (props) {
       password === ""
         ? setReqPassword("dispBlock")
         : setReqPassword("dispNone");
-      setSignUp("Enter all the mandatory details !");
+      setSignUp("Please enter all the details!");
     } else {
       fetch("http://localhost:8085/api/v1/signup", {
         body: JSON.stringify(params),
-        method: "POST",
+        Method: "POST",
         headers: {
           Accept: "application/json;charset=UTF-8",
           "Content-Type": "application/json;charset=UTF-8",
@@ -173,20 +173,21 @@ const Header = function (props) {
       })
         .then((response) => {
           response.json();
-          setSignUp("Registration Successfull. Please Login !");
+          setSignUp("Registration Successful. Please Login!");
           setFirstName("");
           setLastName("");
           setEmail("");
           setPassword("");
           setPhone("");
+          console.log("fetch done");
         })
         .catch((error) => {
-          setSignUp("Registration not successful");
+          setSignUp("Registration not successful.");
         });
     }
   };
 
-  // Modal functionality - implementation
+  // Login - Logout button
   const loginOrLogout = () => {
     if (!isUserLoggedIn) {
       setIsOpen(true);
@@ -194,6 +195,7 @@ const Header = function (props) {
     }
   };
 
+  // Bookshow button
   const handleBookShow = () => {
     if (buttonLogin === "LOGIN") {
       setIsOpen(true);
@@ -263,6 +265,7 @@ const Header = function (props) {
               {/* Login form - implementation */}
               <TabPanel value={value} index={0}>
                 <FormControl className="forms">
+                  <br />
                   <TextField
                     label="Username"
                     variant="standard"
@@ -298,6 +301,7 @@ const Header = function (props) {
               {/* Register form - implementation */}
               <TabPanel value={value} index={1}>
                 <FormControl className="forms">
+                  <br />
                   <TextField
                     label="First Name"
                     variant="standard"
