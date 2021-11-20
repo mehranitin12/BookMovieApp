@@ -1,0 +1,68 @@
+.header {
+    background-color: #222;
+    height: 36px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 32px;
+    padding-left: 16px;
+}
+
+.img-fluid {
+    background-color: #ff7f7f;
+    height: 35px;
+    animation: logo-revolver 8s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes logo-revolver {
+    from {
+        transform: rotateY(0deg);
+    }
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+.closeButton {
+    color: #222;
+    float: right;
+}
+
+.buttonLogin {
+    float: right;
+}
+
+.forms {
+    display: block;
+    text-align: center;
+}
+
+.tabAllignments {
+    display: block;
+    text-align: center;
+}
+
+.modalStyling {
+    display: flex !important;
+}
+
+.custom-model-class {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 12%;
+    margin-bottom: 20%;
+    background: white;
+    border: 1px black;
+    overflow: hidden;
+}
+
+.error-details-login {
+    color: red;
+}
+
+.bookMyShow {
+    float: right;
+    margin-right: 7px !important;
+}
