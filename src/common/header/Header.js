@@ -251,11 +251,11 @@ const Header = function (props) {
             ariaHideApp={false}
             className="custom-model-class"
           >
-            <IconButton onClick={closeModal} className="closeButton">
+            {/* <IconButton onClick={closeModal} className="closeButton">
               <Close></Close>
             </IconButton>
             <br />
-            <br />
+            <br /> */}
             <div className="tabAllignments">
               <Tabs value={value} onChange={handleChange}>
                 <Tab className="tabAllignments" label="Login" />

@@ -1,0 +1,42 @@
+.homePageHeader {
+    background-color: #ff9999;
+    padding: 8px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.gridHeightAdjuster {
+    height: 250px;
+}
+
+ul.custom-grid {
+    flex-wrap: nowrap;
+}
+
+ul.movie-home-grid li {
+    margin: 16px;
+}
+
+.home-details {
+    display: flex;
+}
+
+.home-details>div {
+    flex-wrap: nowrap;
+}
+
+.movie-display {
+    width: 76%;
+}
+
+.movie-filter {
+    width: 24%;
+}
+
+.movie-filter>div {
+    margin: 10px 20px;
+}
+
+.movie-filter .filter-forms {
+    width: 100%;
+}
