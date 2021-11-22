@@ -27,10 +27,16 @@ ul.movie-home-grid li {
 
 .movie-display {
     width: 76%;
+    margin: 16px;
+}
+
+.movie-img {
+    cursor: pointer;
 }
 
 .movie-filter {
     width: 24%;
+    margin: 16px;
 }
 
 .movie-filter>div {

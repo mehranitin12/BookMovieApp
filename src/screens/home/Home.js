@@ -20,6 +20,14 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@material-ui/core";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+
+const theme = createMuiTheme;
+({
+  palette: {
+    primary: { light: "#42a5f5" },
+  },
+});
 
 const Home = (props) => {
   const [movieList, setMovieList] = useState([]);
@@ -181,6 +189,7 @@ const Home = (props) => {
                 <GridListTile key={movie.poster_url} rows={1}>
                   <Link to={`/movie/${movie.id}`}>
                     <img
+                      className="movie-img"
                       src={movie.poster_url}
                       alt={movie.title}
                       width="100%"
@@ -194,7 +203,7 @@ const Home = (props) => {
           </div>
           {/* Grid of movies display starts */}
 
-          {/* Right side search filter starts */}
+          {/* Right side - Find movies by search starts */}
           <div className="movie-filter">
             <Card sx={{ minWidth: 240 }}>
               <CardContent>
