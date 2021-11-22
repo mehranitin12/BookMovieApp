@@ -20,6 +20,8 @@ function TabPanel(props) {
   return <div {...other}>{value === index && <div p={3}>{children}</div>}</div>;
 }
 
+// const dispatch = useDispatch();
+
 const Header = function (props) {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -61,7 +63,7 @@ const Header = function (props) {
   };
 
   // Login functionality - implementation
-  async function login() {
+  async function login(props) {
     const param = window.btoa(`${userName}:${loginPassword}`);
     if (userName === "" || loginPassword === "") {
       userName === ""
@@ -74,7 +76,7 @@ const Header = function (props) {
     } else {
       try {
         const rawResponse = await fetch(
-          "http://localhost:8085/api/v1/auth/login",
+          "http://localhost:8085/api/v1/" + "auth/login",
           {
             method: "POST",
             headers: {
@@ -113,17 +115,14 @@ const Header = function (props) {
   // Logout functionality - implementation
   async function logout() {
     const param = window.sessionStorage.getItem("access-token");
-    const rawResponse = await fetch(
-      "http://localhost:8085/api/v1/auth/logout",
-      {
-        method: "POST",
-        headers: {
-          Accept: "*/*",
-          "Content-Type": "application/json",
-          authorization: `Bearer ${param}`,
-        },
-      }
-    );
+    const rawResponse = await fetch(props.baseUrl + "auth/logout", {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        authorization: `Basic ${param}`,
+      },
+    });
 
     if (rawResponse.ok) {
       setButtonLogin("LOGIN");
@@ -143,6 +142,7 @@ const Header = function (props) {
       mobile_number: phone,
       password: password,
     };
+    let dataSignUp = JSON.stringify(params);
     if (
       email === "" ||
       firstName === "" ||
@@ -163,15 +163,17 @@ const Header = function (props) {
         : setReqPassword("dispNone");
       setSignUp("Please enter all the details!");
     } else {
-      fetch("http://localhost:8085/api/v1/signup", {
-        body: JSON.stringify(params),
+      await fetch(props.baseUrl + "signup", {
         Method: "POST",
         headers: {
-          Accept: "application/json;charset=UTF-8",
-          "Content-Type": "application/json;charset=UTF-8",
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+          Authorization: "Basic" + window.btoa(`${userName}:${loginPassword}`),
         },
+        body: dataSignUp,
       })
         .then((response) => {
+          console.log("fetch done");
           response.json();
           setSignUp("Registration Successful. Please Login!");
           setFirstName("");
@@ -179,7 +181,6 @@ const Header = function (props) {
           setEmail("");
           setPassword("");
           setPhone("");
-          console.log("fetch done");
         })
         .catch((error) => {
           setSignUp("Registration not successful.");
@@ -291,7 +292,12 @@ const Header = function (props) {
                   </FormHelperText>
                   <br />
                   <div className="error-details-login">{loginDetail}</div>
-                  <Button variant="contained" color="primary" onClick={login}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={login}
+                    type="submit"
+                  >
                     LOGIN
                   </Button>
                   <br />
