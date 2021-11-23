@@ -1,21 +1,20 @@
-.header {
+.navbar {
+    overflow: hidden;
     background-color: #222;
     height: 36px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-right: 32px;
-    padding-left: 16px;
+    padding: 8px 32px 8px 16px;
 }
 
-.img-fluid {
+.logo {
     background-color: #ff7f7f;
     height: 35px;
-    animation: logo-revolver 8s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
 }
 
-@keyframes logo-revolver {
+.logo-animation {
+    animation: logo-rotation 8s infinite linear;
+}
+
+@keyframes logo-rotation {
     from {
         transform: rotateY(0deg);
     }
@@ -24,52 +23,10 @@
     }
 }
 
-.closeButton {
-    color: #222;
+.login-logout-button {
     float: right;
 }
 
-.buttonLogin {
-    float: right;
-}
-
-.forms {
-    display: block;
-    text-align: center;
-    border: #222 1px solid;
-}
-
-.tabAllignments {
-    display: block;
-    text-align: center;
-    margin: 10px;
-    padding: 10px;
-}
-
-.modalStyling {
-    display: flex !important;
-    position: fixed;
-    justify-content: center;
-    align-items: center;
-}
-
-.custom-model-class {
-    width: 360px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10%;
-    margin-bottom: 20%;
-    background: #fff;
-    border: #b2bec3 1px solid;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.error-details-login {
-    color: red;
-}
-
-.bookMyShow {
-    float: right;
-    margin-right: 7px !important;
+.tabs {
+    margin-bottom: 20px;
 }

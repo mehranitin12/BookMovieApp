@@ -1,386 +1,392 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import "./Header.css";
-import Logo from "../../assets/logo.svg";
-import {
-  Button,
-  FormControl,
-  IconButton,
-  Tabs,
-  Tab,
-  TextField,
-  FormHelperText,
-} from "@material-ui/core";
-import ReactModal from "react-modal";
-import Close from "@material-ui/icons/Close";
+import logo from "../../assets/logo.svg";
+import Button from "@material-ui/core/Button";
+import Modal from "react-modal";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from "@material-ui/core/Input";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import { Link } from "react-router-dom";
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+const Header = (props) => {
+  const [IsLoggedIn, setIsLoggedIn] = useState(
+    sessionStorage.getItem("access-token") == null ? false : true
+  );
+  const [OpenLoginRegisterModal, setOpenLoginRegisterModal] = useState(false);
+  const [ModalTabValue, setModalTabValue] = useState(0);
+  const handleCloseLoginRegisterModal = () => setOpenLoginRegisterModal(false);
+  const [LoginFormValues, setLoginFormValues] = useState({
+    username: "",
+    password: "",
+  });
+  const [UsernameRequired, setUsernameRequired] = useState(false);
+  const [LoginPasswordRequired, setLoginPasswordRequired] = useState(false);
 
-  return <div {...other}>{value === index && <div p={3}>{children}</div>}</div>;
-}
+  const [RegisterFormValues, setRegisterFormValues] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    registerPassword: "",
+    contact: "",
+  });
 
-// const dispatch = useDispatch();
+  const [firstNameRequired, setFirstNameRequired] = useState(false);
+  const [LastNameRequired, setLastNameRequired] = useState(false);
+  const [EmailRequired, setEmailRequired] = useState(false);
+  const [ContactRequired, setContactRequired] = useState(false);
+  const [RegisterPasswordRequired, setRegisterPasswordRequired] =
+    useState(false);
+  const [IsRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
 
-const Header = function (props) {
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [value, setValue] = useState(0);
-  const [userName, setUserName] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [buttonLogin, setButtonLogin] = useState("LOGIN");
-  const [signUp, setSignUp] = useState("");
-  const [isUserLoggedIn, setUserLoggedIn] = useState(false);
-  const [loginDetail, setLoginDetail] = useState("");
-  const accessedDetailsPage = props.buttonRequest;
-  const detailsID = props.getDetails;
-  const [reqLoginUserName, setReqLoginUserName] = useState("dispNone");
-  const [reqLoginPassword, setReqLoginPassword] = useState("dispNone");
-  const [reqPhone, setReqPhone] = useState("dispNone");
-  const [reqEmail, setReqEmail] = useState("dispNone");
-  const [reqPassword, setReqPassword] = useState("dispNone");
-  const [reqFirstName, setReqFirstName] = useState("dispNone");
-  const [reqLastName, setReqLastName] = useState("dispNone");
-
-  React.useEffect(() => {
-    const loginInfo = window.sessionStorage.getItem("access-token");
-    if (loginInfo) {
-      setUserLoggedIn(true);
-    } else {
-      setUserLoggedIn(false);
-    }
-  }, []);
-  const closeModal = () => {
-    setIsOpen(false);
+  const customModalStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
   };
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleModalTabChange = (event, newValue) => {
+    setModalTabValue(newValue);
   };
 
-  // Login functionality - implementation
-  async function login(props) {
-    const param = window.btoa(`${userName}:${loginPassword}`);
-    if (userName === "" || loginPassword === "") {
-      userName === ""
-        ? setReqLoginUserName("dispBlock")
-        : setReqLoginUserName("dispNone");
-      loginPassword === ""
-        ? setReqLoginPassword("dispBlock")
-        : setReqLoginPassword("dispNone");
-      setLoginDetail("Enter all the values");
-    } else {
-      try {
-        const rawResponse = await fetch(
-          "http://localhost:8085/api/v1/" + "auth/login",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json;charset=UTF-8",
-              authorization: `Basic ${param}`,
-            },
-          }
-        );
+  const onLoginFormSubmit = (e) => {
+    e.preventDefault();
+    setUsernameRequired(LoginFormValues.username === "" ? true : false);
+    setLoginPasswordRequired(LoginFormValues.password === "" ? true : false);
 
-        const result = await rawResponse.json();
-        if (rawResponse.ok) {
-          window.sessionStorage.setItem("user-details", JSON.stringify(result));
-          window.sessionStorage.setItem(
-            "access-token",
-            rawResponse.headers.get("access-token")
-          );
-          setButtonLogin("LOGOUT");
-          setIsOpen(false);
-          setLoginDetail("");
-          setUserLoggedIn(true);
-          setUserName("");
-          setLoginPassword("");
-        } else {
-          const error = new Error();
-          error.message = result.message || "Something went wrong.";
-          setLoginDetail("Incorrect username or password");
-        }
-      } catch (e) {
-        alert(`Error: ${e.message}`);
-        setLoginDetail("Incorrect username or password");
-      }
-    }
-  }
-
-  // Logout functionality - implementation
-  async function logout() {
-    const param = window.sessionStorage.getItem("access-token");
-    const rawResponse = await fetch(props.baseUrl + "auth/logout", {
+    fetch(props.baseUrl + "auth/login", {
       method: "POST",
       headers: {
-        Accept: "*/*",
         "Content-Type": "application/json",
-        authorization: `Basic ${param}`,
+        "Cache-Control": "no-cache",
+        Authorization:
+          "Basic " +
+          window.btoa(
+            LoginFormValues.username + ":" + LoginFormValues.password
+          ),
       },
-    });
-
-    if (rawResponse.ok) {
-      setButtonLogin("LOGIN");
-      window.sessionStorage.clear();
-      setUserLoggedIn(false);
-    } else {
-      setLoginDetail("Incorrect username or password");
-    }
-  }
-
-  // Register functionality - implementation
-  const handleSubmitSignup = async () => {
-    const params = {
-      email_address: email,
-      first_name: firstName,
-      last_name: lastName,
-      mobile_number: phone,
-      password: password,
-    };
-    let dataSignUp = JSON.stringify(params);
-    if (
-      email === "" ||
-      firstName === "" ||
-      lastName === "" ||
-      phone === "" ||
-      password === ""
-    ) {
-      email === "" ? setReqEmail("dispBlock") : setReqEmail("dispNone");
-      firstName === ""
-        ? setReqFirstName("dispBlock")
-        : setReqFirstName("dispNone");
-      lastName === ""
-        ? setReqLastName("dispBlock")
-        : setReqLastName("dispNone");
-      phone === "" ? setReqPhone("dispBlock") : setReqPhone("dispNone");
-      password === ""
-        ? setReqPassword("dispBlock")
-        : setReqPassword("dispNone");
-      setSignUp("Please enter all the details!");
-    } else {
-      await fetch(props.baseUrl + "signup", {
-        Method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-          Authorization: "Basic" + window.btoa(`${userName}:${loginPassword}`),
-        },
-        body: dataSignUp,
+    })
+      .then((response) => {
+        sessionStorage.setItem(
+          "access-token",
+          response.headers.get("access-token")
+        );
+        return response.json();
       })
-        .then((response) => {
-          console.log("fetch done");
-          response.json();
-          setSignUp("Registration Successful. Please Login!");
-          setFirstName("");
-          setLastName("");
-          setEmail("");
-          setPassword("");
-          setPhone("");
-        })
-        .catch((error) => {
-          setSignUp("Registration not successful.");
-        });
-    }
+      .then((response) => {
+        if (response.status === "ACTIVE") {
+          setIsLoggedIn(true);
+          handleCloseLoginRegisterModal();
+        }
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
   };
 
-  // Login - Logout button
-  const loginOrLogout = () => {
-    if (!isUserLoggedIn) {
-      setIsOpen(true);
-      setButtonLogin("LOGIN");
-    }
+  const logoutHandler = (e) => {
+    e.preventDefault();
+    sessionStorage.removeItem("access-token");
+    setIsLoggedIn(false);
   };
 
-  // Bookshow button
-  const handleBookShow = () => {
-    if (buttonLogin === "LOGIN") {
-      setIsOpen(true);
-    }
+  const onRegisterFormSubmit = (e) => {
+    e.preventDefault();
+
+    setFirstNameRequired(RegisterFormValues.firstname === "" ? true : false);
+    setLastNameRequired(RegisterFormValues.lastname === "" ? true : false);
+    setEmailRequired(RegisterFormValues.email === "" ? true : false);
+    setRegisterPasswordRequired(
+      RegisterFormValues.registerPassword === "" ? true : false
+    );
+    setContactRequired(RegisterFormValues.contact === "" ? true : false);
+
+    let signupData = JSON.stringify({
+      first_name: RegisterFormValues.firstname,
+      last_name: RegisterFormValues.lastname,
+      email_address: RegisterFormValues.email,
+      mobile_number: RegisterFormValues.contact,
+      password: RegisterFormValues.registerPassword,
+    });
+    console.log(
+      "🚀 ~ file: Header.js ~ line 116 ~ onRegisterFormSubmit ~ signupData",
+      signupData
+    );
+
+    fetch(props.baseUrl + "signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+      },
+      body: signupData,
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        setIsRegistrationSuccess(response.status === "ACTIVE" ? true : false);
+      });
   };
 
   return (
-    <div>
-      <div className="header">
-        <img className="img-fluid" src={Logo} alt="logo" />
-
-        {isUserLoggedIn ? (
-          <Button variant="contained" className="buttonLogin" onClick={logout}>
+    <Fragment>
+      <header className="navbar">
+        <img src={logo} className="logo logo-animation" alt="logo" />
+        {IsLoggedIn ? (
+          <Button
+            onClick={(e) => logoutHandler(e)}
+            className="login-logout-button"
+            color="default"
+            variant="contained"
+          >
             Logout
           </Button>
         ) : (
           <Button
+            onClick={(e) => setOpenLoginRegisterModal(true)}
+            className="login-logout-button"
+            color="default"
             variant="contained"
-            className="buttonLogin"
-            onClick={loginOrLogout}
           >
             Login
           </Button>
         )}
 
-        {accessedDetailsPage && isUserLoggedIn && (
-          <Link to={`/bookshow/${detailsID}`}>
+        {props.showBookShowButton === "true" && !IsLoggedIn ? (
+          <div className="bookshow-button">
             <Button
               variant="contained"
-              className="bookMyShow"
               color="primary"
-              onClick={handleBookShow}
+              onClick={(e) => setOpenLoginRegisterModal(true)}
             >
-              {props.buttonNeeded}
+              Book Show
             </Button>
-          </Link>
+          </div>
+        ) : (
+          ""
         )}
-        {accessedDetailsPage && !isUserLoggedIn && (
-          <Button
-            onClick={loginOrLogout}
-            variant="contained"
-            color="primary"
-            className="bookMyShow"
-          >
-            {props.buttonNeeded}
-          </Button>
+
+        {props.showBookShowButton === "true" && IsLoggedIn ? (
+          <div className="bookshow-button">
+            <Link to={"/bookshow/" + props.id}>
+              <Button variant="contained" color="primary">
+                Book Show
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          ""
         )}
-        <div className="modalStyling">
-          <ReactModal
-            isOpen={modalIsOpen}
-            onRequestClose={closeModal}
-            contentLabel="Login Modal"
-            ariaHideApp={false}
-            className="custom-model-class"
-          >
-            {/* <IconButton onClick={closeModal} className="closeButton">
-              <Close></Close>
-            </IconButton>
+      </header>
+      <Modal
+        ariaHideApp={false}
+        isOpen={OpenLoginRegisterModal}
+        contentLabel="Login"
+        onRequestClose={handleCloseLoginRegisterModal}
+        style={customModalStyles}
+      >
+        <Tabs
+          className="tabs"
+          value={ModalTabValue}
+          onChange={handleModalTabChange}
+          variant="fullWidth"
+        >
+          <Tab label="LOGIN" />
+          <Tab label="REGISTER" />
+        </Tabs>
+        {ModalTabValue === 0 && (
+          <div style={{ padding: 0, textAlign: "center" }}>
+            <FormControl required>
+              <InputLabel htmlFor="username">Username</InputLabel>
+              <Input
+                id="username"
+                type="text"
+                value={LoginFormValues.username}
+                onChange={(e) => {
+                  setLoginFormValues({
+                    ...LoginFormValues,
+                    username: e.target.value,
+                  });
+                }}
+              />
+              {UsernameRequired && (
+                <FormHelperText>
+                  <span className="red">required</span>
+                </FormHelperText>
+              )}
+            </FormControl>
             <br />
-            <br /> */}
-            <div className="tabAllignments">
-              <Tabs value={value} onChange={handleChange}>
-                <Tab className="tabAllignments" label="Login" />
-                <Tab className="tabAllignments" label="Register" />
-              </Tabs>
+            <br />
+            <FormControl required>
+              <InputLabel htmlFor="loginPassword">Password</InputLabel>
+              <Input
+                id="loginPassword"
+                type="password"
+                value={LoginFormValues.password}
+                onChange={(e) => {
+                  setLoginFormValues({
+                    ...LoginFormValues,
+                    password: e.target.value,
+                  });
+                }}
+              />
+              {LoginPasswordRequired && (
+                <FormHelperText>
+                  <span className="red">required</span>
+                </FormHelperText>
+              )}
+            </FormControl>
+            <br />
+            <br />
+            {IsLoggedIn === true && (
+              <FormControl>
+                <span className="successText">Login Successful!</span>
+              </FormControl>
+            )}
+            <br />
+            <br />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onLoginFormSubmit}
+            >
+              LOGIN
+            </Button>
+          </div>
+        )}
 
-              {/* Login form - implementation */}
-              <TabPanel value={value} index={0}>
-                <FormControl className="forms">
-                  <br />
-                  <TextField
-                    label="Username"
-                    variant="standard"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    required={true}
-                  />
-                  <FormHelperText className={reqLoginUserName}>
-                    <span className="red">Required</span>
-                  </FormHelperText>
-                  <br />
-
-                  <TextField
-                    label="Password"
-                    variant="standard"
-                    type="password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    required={true}
-                  />
-                  <FormHelperText className={reqLoginPassword}>
-                    <span className="red">Required</span>
-                  </FormHelperText>
-                  <br />
-                  <div className="error-details-login">{loginDetail}</div>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={login}
-                    type="submit"
-                  >
-                    LOGIN
-                  </Button>
-                  <br />
-                </FormControl>
-              </TabPanel>
-
-              {/* Register form - implementation */}
-              <TabPanel value={value} index={1}>
-                <FormControl className="forms">
-                  <br />
-                  <TextField
-                    label="First Name"
-                    variant="standard"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required={true}
-                  />
-                  <FormHelperText className={reqFirstName}>
-                    <span className="red">Required</span>
-                  </FormHelperText>
-                  <br />
-                  <TextField
-                    label="Last Name"
-                    variant="standard"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required={true}
-                  />
-                  <FormHelperText className={reqLastName}>
-                    <span className="red">Required</span>
-                  </FormHelperText>
-                  <br />
-                  <TextField
-                    label="Email"
-                    variant="standard"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required={true}
-                  />
-                  <FormHelperText className={reqEmail}>
-                    <span className="red">Required</span>
-                  </FormHelperText>
-                  <br />
-                  <TextField
-                    label="Password"
-                    variant="standard"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required={true}
-                  />
-                  <FormHelperText className={reqPassword}>
-                    <span className="red">Required</span>
-                  </FormHelperText>
-                  <br />
-                  <TextField
-                    label="Contact No."
-                    variant="standard"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required={true}
-                  />
-                  <FormHelperText className={reqPhone}>
-                    <span className="red">Required</span>
-                  </FormHelperText>
-                  <br />
-                  <div className="error-details-login">{signUp}</div>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmitSignup}
-                  >
-                    REGISTER
-                  </Button>
-                  <br />
-                </FormControl>
-              </TabPanel>
-            </div>
-          </ReactModal>
-        </div>
-      </div>
-    </div>
+        {ModalTabValue === 1 && (
+          <div style={{ padding: 0, textAlign: "center" }}>
+            <FormControl required>
+              <InputLabel htmlFor="firstname">First Name</InputLabel>
+              <Input
+                id="firstname"
+                type="text"
+                value={RegisterFormValues.firstname}
+                onChange={(e) => {
+                  setRegisterFormValues({
+                    ...RegisterFormValues,
+                    firstname: e.target.value,
+                  });
+                }}
+              />
+              {firstNameRequired && (
+                <FormHelperText>
+                  <span className="red">required</span>
+                </FormHelperText>
+              )}
+            </FormControl>
+            <br />
+            <br />
+            <FormControl required>
+              <InputLabel htmlFor="lastname">Last Name</InputLabel>
+              <Input
+                id="lastname"
+                type="text"
+                value={RegisterFormValues.lastname}
+                onChange={(e) => {
+                  setRegisterFormValues({
+                    ...RegisterFormValues,
+                    lastname: e.target.value,
+                  });
+                }}
+              />
+              {LastNameRequired && (
+                <FormHelperText>
+                  <span className="red">required</span>
+                </FormHelperText>
+              )}
+            </FormControl>
+            <br />
+            <br />
+            <FormControl required>
+              <InputLabel htmlFor="email">Email</InputLabel>
+              <Input
+                id="email"
+                type="text"
+                value={RegisterFormValues.email}
+                onChange={(e) => {
+                  setRegisterFormValues({
+                    ...RegisterFormValues,
+                    email: e.target.value,
+                  });
+                }}
+              />
+              {EmailRequired && (
+                <FormHelperText>
+                  <span className="red">required</span>
+                </FormHelperText>
+              )}
+            </FormControl>
+            <br />
+            <br />
+            <FormControl required>
+              <InputLabel htmlFor="registerPassword">Password</InputLabel>
+              <Input
+                id="registerPassword"
+                type="password"
+                value={RegisterFormValues.registerPassword}
+                onChange={(e) => {
+                  setRegisterFormValues({
+                    ...RegisterFormValues,
+                    registerPassword: e.target.value,
+                  });
+                }}
+              />
+              {RegisterPasswordRequired && (
+                <FormHelperText>
+                  <span className="red">required</span>
+                </FormHelperText>
+              )}
+            </FormControl>
+            <br />
+            <br />
+            <FormControl required>
+              <InputLabel htmlFor="contact">Contact No.</InputLabel>
+              <Input
+                id="contact"
+                type="text"
+                value={RegisterFormValues.contact}
+                onChange={(e) => {
+                  setRegisterFormValues({
+                    ...RegisterFormValues,
+                    contact: e.target.value,
+                  });
+                }}
+              />
+              {ContactRequired && (
+                <FormHelperText>
+                  <span className="red">required</span>
+                </FormHelperText>
+              )}
+            </FormControl>
+            <br />
+            <br />
+            {IsRegistrationSuccess === true && (
+              <FormControl>
+                <span>Registration Successful. Please Login!</span>
+              </FormControl>
+            )}
+            <br />
+            <br />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onRegisterFormSubmit}
+            >
+              REGISTER
+            </Button>
+          </div>
+        )}
+      </Modal>
+    </Fragment>
   );
 };
 

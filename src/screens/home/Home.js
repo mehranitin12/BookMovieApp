@@ -166,7 +166,7 @@ const Home = (props) => {
   return (
     <div>
       <div className="home-container">
-        <Header />
+        <Header baseUrl={props.baseUrl} />
 
         <div className="homePageHeader">Upcoming Movies</div>
 
