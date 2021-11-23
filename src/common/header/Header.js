@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import "./Header.css";
 import logo from "../../assets/logo.svg";
-import Button from "@material-ui/core/Button";
+import { Button } from "@material-ui/core";
 import Modal from "react-modal";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
