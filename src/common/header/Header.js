@@ -1,31 +1,33 @@
 import React, { Fragment, useState } from "react";
 import "./Header.css";
 import logo from "../../assets/logo.svg";
-import { Button } from "@material-ui/core";
+import {
+  Button,
+  Tabs,
+  Tab,
+  FormControl,
+  InputLabel,
+  Input,
+  FormHelperText,
+} from "@material-ui/core";
 import Modal from "react-modal";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import { Link } from "react-router-dom";
 
 const Header = (props) => {
-  const [IsLoggedIn, setIsLoggedIn] = useState(
+  const [isLoggedIn, setIsLoggedIn] = useState(
     sessionStorage.getItem("access-token") == null ? false : true
   );
-  const [OpenLoginRegisterModal, setOpenLoginRegisterModal] = useState(false);
-  const [ModalTabValue, setModalTabValue] = useState(0);
+  const [openLoginRegisterModal, setOpenLoginRegisterModal] = useState(false);
+  const [modalTabValue, setModalTabValue] = useState(0);
   const handleCloseLoginRegisterModal = () => setOpenLoginRegisterModal(false);
-  const [LoginFormValues, setLoginFormValues] = useState({
+  const [loginFormValues, setLoginFormValues] = useState({
     username: "",
     password: "",
   });
-  const [UsernameRequired, setUsernameRequired] = useState(false);
-  const [LoginPasswordRequired, setLoginPasswordRequired] = useState(false);
+  const [usernameRequired, setUsernameRequired] = useState(false);
+  const [loginPasswordRequired, setLoginPasswordRequired] = useState(false);
 
-  const [RegisterFormValues, setRegisterFormValues] = useState({
+  const [registerFormValues, setRegisterFormValues] = useState({
     firstname: "",
     lastname: "",
     email: "",
@@ -34,14 +36,14 @@ const Header = (props) => {
   });
 
   const [firstNameRequired, setFirstNameRequired] = useState(false);
-  const [LastNameRequired, setLastNameRequired] = useState(false);
-  const [EmailRequired, setEmailRequired] = useState(false);
-  const [ContactRequired, setContactRequired] = useState(false);
-  const [RegisterPasswordRequired, setRegisterPasswordRequired] =
+  const [lastNameRequired, setLastNameRequired] = useState(false);
+  const [emailRequired, setEmailRequired] = useState(false);
+  const [contactRequired, setContactRequired] = useState(false);
+  const [registerPasswordRequired, setRegisterPasswordRequired] =
     useState(false);
-  const [IsRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
+  const [isRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
 
-  const customModalStyles = {
+  const modalProperties = {
     content: {
       top: "50%",
       left: "50%",
@@ -58,8 +60,8 @@ const Header = (props) => {
 
   const onLoginFormSubmit = (e) => {
     e.preventDefault();
-    setUsernameRequired(LoginFormValues.username === "" ? true : false);
-    setLoginPasswordRequired(LoginFormValues.password === "" ? true : false);
+    setUsernameRequired(loginFormValues.username === "" ? true : false);
+    setLoginPasswordRequired(loginFormValues.password === "" ? true : false);
 
     fetch(props.baseUrl + "auth/login", {
       method: "POST",
@@ -69,7 +71,7 @@ const Header = (props) => {
         Authorization:
           "Basic " +
           window.btoa(
-            LoginFormValues.username + ":" + LoginFormValues.password
+            loginFormValues.username + ":" + loginFormValues.password
           ),
       },
     })
@@ -100,25 +102,21 @@ const Header = (props) => {
   const onRegisterFormSubmit = (e) => {
     e.preventDefault();
 
-    setFirstNameRequired(RegisterFormValues.firstname === "" ? true : false);
-    setLastNameRequired(RegisterFormValues.lastname === "" ? true : false);
-    setEmailRequired(RegisterFormValues.email === "" ? true : false);
+    setFirstNameRequired(registerFormValues.firstname === "" ? true : false);
+    setLastNameRequired(registerFormValues.lastname === "" ? true : false);
+    setEmailRequired(registerFormValues.email === "" ? true : false);
     setRegisterPasswordRequired(
-      RegisterFormValues.registerPassword === "" ? true : false
+      registerFormValues.registerPassword === "" ? true : false
     );
-    setContactRequired(RegisterFormValues.contact === "" ? true : false);
+    setContactRequired(registerFormValues.contact === "" ? true : false);
 
-    let signupData = JSON.stringify({
-      first_name: RegisterFormValues.firstname,
-      last_name: RegisterFormValues.lastname,
-      email_address: RegisterFormValues.email,
-      mobile_number: RegisterFormValues.contact,
-      password: RegisterFormValues.registerPassword,
+    let signUpData = JSON.stringify({
+      first_name: registerFormValues.firstname,
+      last_name: registerFormValues.lastname,
+      email_address: registerFormValues.email,
+      mobile_number: registerFormValues.contact,
+      password: registerFormValues.registerPassword,
     });
-    console.log(
-      "🚀 ~ file: Header.js ~ line 116 ~ onRegisterFormSubmit ~ signupData",
-      signupData
-    );
 
     fetch(props.baseUrl + "signup", {
       method: "POST",
@@ -126,7 +124,7 @@ const Header = (props) => {
         "Content-Type": "application/json",
         "Cache-Control": "no-cache",
       },
-      body: signupData,
+      body: signUpData,
     })
       .then((response) => response.json())
       .then((response) => {
@@ -139,7 +137,7 @@ const Header = (props) => {
     <Fragment>
       <header className="navbar">
         <img src={logo} className="logo logo-animation" alt="logo" />
-        {IsLoggedIn ? (
+        {isLoggedIn ? (
           <Button
             onClick={(e) => logoutHandler(e)}
             className="login-logout-button"
@@ -159,7 +157,7 @@ const Header = (props) => {
           </Button>
         )}
 
-        {props.showBookShowButton === "true" && !IsLoggedIn ? (
+        {props.showBookShowButton === "true" && !isLoggedIn ? (
           <div className="bookshow-button">
             <Button
               variant="contained"
@@ -173,7 +171,7 @@ const Header = (props) => {
           ""
         )}
 
-        {props.showBookShowButton === "true" && IsLoggedIn ? (
+        {props.showBookShowButton === "true" && isLoggedIn ? (
           <div className="bookshow-button">
             <Link to={"/bookshow/" + props.id}>
               <Button variant="contained" color="primary">
@@ -187,36 +185,36 @@ const Header = (props) => {
       </header>
       <Modal
         ariaHideApp={false}
-        isOpen={OpenLoginRegisterModal}
+        isOpen={openLoginRegisterModal}
         contentLabel="Login"
         onRequestClose={handleCloseLoginRegisterModal}
-        style={customModalStyles}
+        style={modalProperties}
       >
         <Tabs
           className="tabs"
-          value={ModalTabValue}
+          value={modalTabValue}
           onChange={handleModalTabChange}
           variant="fullWidth"
         >
           <Tab label="LOGIN" />
           <Tab label="REGISTER" />
         </Tabs>
-        {ModalTabValue === 0 && (
+        {modalTabValue === 0 && (
           <div style={{ padding: 0, textAlign: "center" }}>
             <FormControl required>
               <InputLabel htmlFor="username">Username</InputLabel>
               <Input
                 id="username"
                 type="text"
-                value={LoginFormValues.username}
+                value={loginFormValues.username}
                 onChange={(e) => {
                   setLoginFormValues({
-                    ...LoginFormValues,
+                    ...loginFormValues,
                     username: e.target.value,
                   });
                 }}
               />
-              {UsernameRequired && (
+              {usernameRequired && (
                 <FormHelperText>
                   <span className="red">required</span>
                 </FormHelperText>
@@ -229,15 +227,15 @@ const Header = (props) => {
               <Input
                 id="loginPassword"
                 type="password"
-                value={LoginFormValues.password}
+                value={loginFormValues.password}
                 onChange={(e) => {
                   setLoginFormValues({
-                    ...LoginFormValues,
+                    ...loginFormValues,
                     password: e.target.value,
                   });
                 }}
               />
-              {LoginPasswordRequired && (
+              {loginPasswordRequired && (
                 <FormHelperText>
                   <span className="red">required</span>
                 </FormHelperText>
@@ -245,7 +243,7 @@ const Header = (props) => {
             </FormControl>
             <br />
             <br />
-            {IsLoggedIn === true && (
+            {isLoggedIn === true && (
               <FormControl>
                 <span className="successText">Login Successful!</span>
               </FormControl>
@@ -262,17 +260,17 @@ const Header = (props) => {
           </div>
         )}
 
-        {ModalTabValue === 1 && (
+        {modalTabValue === 1 && (
           <div style={{ padding: 0, textAlign: "center" }}>
             <FormControl required>
               <InputLabel htmlFor="firstname">First Name</InputLabel>
               <Input
                 id="firstname"
                 type="text"
-                value={RegisterFormValues.firstname}
+                value={registerFormValues.firstname}
                 onChange={(e) => {
                   setRegisterFormValues({
-                    ...RegisterFormValues,
+                    ...registerFormValues,
                     firstname: e.target.value,
                   });
                 }}
@@ -290,15 +288,15 @@ const Header = (props) => {
               <Input
                 id="lastname"
                 type="text"
-                value={RegisterFormValues.lastname}
+                value={registerFormValues.lastname}
                 onChange={(e) => {
                   setRegisterFormValues({
-                    ...RegisterFormValues,
+                    ...registerFormValues,
                     lastname: e.target.value,
                   });
                 }}
               />
-              {LastNameRequired && (
+              {lastNameRequired && (
                 <FormHelperText>
                   <span className="red">required</span>
                 </FormHelperText>
@@ -311,15 +309,15 @@ const Header = (props) => {
               <Input
                 id="email"
                 type="text"
-                value={RegisterFormValues.email}
+                value={registerFormValues.email}
                 onChange={(e) => {
                   setRegisterFormValues({
-                    ...RegisterFormValues,
+                    ...registerFormValues,
                     email: e.target.value,
                   });
                 }}
               />
-              {EmailRequired && (
+              {emailRequired && (
                 <FormHelperText>
                   <span className="red">required</span>
                 </FormHelperText>
@@ -332,15 +330,15 @@ const Header = (props) => {
               <Input
                 id="registerPassword"
                 type="password"
-                value={RegisterFormValues.registerPassword}
+                value={registerFormValues.registerPassword}
                 onChange={(e) => {
                   setRegisterFormValues({
-                    ...RegisterFormValues,
+                    ...registerFormValues,
                     registerPassword: e.target.value,
                   });
                 }}
               />
-              {RegisterPasswordRequired && (
+              {registerPasswordRequired && (
                 <FormHelperText>
                   <span className="red">required</span>
                 </FormHelperText>
@@ -353,15 +351,15 @@ const Header = (props) => {
               <Input
                 id="contact"
                 type="text"
-                value={RegisterFormValues.contact}
+                value={registerFormValues.contact}
                 onChange={(e) => {
                   setRegisterFormValues({
-                    ...RegisterFormValues,
+                    ...registerFormValues,
                     contact: e.target.value,
                   });
                 }}
               />
-              {ContactRequired && (
+              {contactRequired && (
                 <FormHelperText>
                   <span className="red">required</span>
                 </FormHelperText>
@@ -369,7 +367,7 @@ const Header = (props) => {
             </FormControl>
             <br />
             <br />
-            {IsRegistrationSuccess === true && (
+            {isRegistrationSuccess === true && (
               <FormControl>
                 <span>Registration Successful. Please Login!</span>
               </FormControl>

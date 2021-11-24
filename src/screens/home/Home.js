@@ -161,156 +161,155 @@ const Home = (props) => {
   };
 
   return (
-    <div>
-      <div className="home-container">
-        <Header baseUrl={props.baseUrl} />
+    <React.Fragment>
+      <Header baseUrl={props.baseUrl} />
+      <div className="upcoming-movies-header">Upcoming Movies</div>
 
-        <div className="upcoming-movies-header">Upcoming Movies</div>
+      {/* Grid of upcoming movies starts */}
+      <GridList className="custom-grid" cols={6} cellHeight={250}>
+        {upcomingMovies.map((tile) => (
+          <GridListTile key={tile.poster_url}>
+            <img
+              className="movie-poster"
+              src={tile.poster_url}
+              alt={tile.title}
+            />
+            <GridListTileBar title={tile.title} />
+          </GridListTile>
+        ))}
+      </GridList>
+      {/* Grid of upcoming movies ends */}
 
-        {/* Grid of upcoming movies starts */}
-        <GridList className="custom-grid" cols={6} cellHeight={250}>
-          {upcomingMovies.map((tile) => (
-            <GridListTile key={tile.poster_url}>
-              <img src={tile.poster_url} alt={tile.title} />
-              <GridListTileBar title={tile.title} />
-            </GridListTile>
-          ))}
-        </GridList>
-        {/* Grid of upcoming movies ends */}
-
-        {/* Grid of released movies starts */}
-        <div className="home-details">
-          <div className="movie-display">
-            <GridList cols={4} className="movie-home-grid" cellHeight={350}>
-              {releasedMovies.map((movie) => (
-                <GridListTile
-                  key={movie.poster_url}
-                  rows={1}
-                  onClick={() => props.history.push("/movie/" + movie.id)}
-                  key={"grid" + movie.id}
-                >
-                  {/* <Link to={`/movie/${movie.id}`}> */}
-                  <img
-                    className="movie-image"
-                    src={movie.poster_url}
-                    alt={movie.title}
-                    width="100%"
-                    height="100%"
-                  />
-                  <GridListTileBar
-                    title={movie.title}
-                    subtitle={
-                      <span>
-                        Release Date:{" "}
-                        {new Date(movie.release_date).toDateString()}
-                      </span>
-                    }
-                  />
-                  {/* </Link> */}
-                </GridListTile>
-              ))}
-            </GridList>
-          </div>
-          {/* Grid of released movies ends */}
-
-          {/* Right side - Find movies by search starts */}
-          <div className="movie-filter">
-            <Card sx={{ minWidth: 240 }}>
-              <CardContent>
-                {/* <MuiThemeProvider theme={theme}> */}
-                <Typography variant="subheading" color="primary">
-                  {" "}
-                  FIND MOVIES BY:
-                </Typography>
-                {/* </MuiThemeProvider> */}
-                <div>
-                  <FormControl className="filter-forms">
-                    <FormControl>
-                      <InputLabel htmlFor="moviesName">Movie Name</InputLabel>
-                      <Input
-                        id="movieName"
-                        value={movieName}
-                        onChange={(e) => setMovieName(e.target.value)}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <InputLabel id="multiple-genre">Genres</InputLabel>
-                      <Select
-                        value={selectedGenre}
-                        multiple
-                        onChange={handleGenreChange}
-                        renderValue={(selectedGenre) =>
-                          selectedGenre.join(" , ")
-                        }
-                      >
-                        {genreList.map((option) => (
-                          <MenuItem key={option} value={option}>
-                            <ListItemIcon>
-                              <Checkbox
-                                checked={selectedGenre.indexOf(option) > -1}
-                              />
-                            </ListItemIcon>
-                            <ListItemText primary={option} />
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    <FormControl>
-                      <InputLabel id="mutiple-select-label">Artists</InputLabel>
-                      <Select
-                        multiple
-                        value={selectedArtist}
-                        onChange={handleChange}
-                        renderValue={(selected) => selected.join(", ")}
-                      >
-                        {artistsNameList.map((option) => (
-                          <MenuItem key={option} value={option}>
-                            <ListItemIcon>
-                              <Checkbox
-                                checked={selectedArtist.indexOf(option) > -1}
-                              />
-                            </ListItemIcon>
-                            <ListItemText primary={option} />
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    <br />
-                    <TextField
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
-                      value={releaseDateStart}
-                      label="Release Date Start"
-                      placeholder="dd-mm-yyyy"
-                      onChange={(e) => setReleaseDateStart(e.target.value)}
-                    />{" "}
-                    <br />
-                    <TextField
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
-                      value={releaseDateEnd}
-                      label="Release Date End"
-                      placeholder="dd-mm-yyyy"
-                      onChange={(e) => setReleaseDateEnd(e.target.value)}
-                    />
-                    <br />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={handleFilter}
-                    >
-                      APPLY
-                    </Button>
-                  </FormControl>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          {/* Right side search filter ends */}
+      {/* Grid of released movies starts */}
+      <div className="home-details">
+        <div className="movie-display">
+          <GridList cols={4} className="movie-home-grid" cellHeight={350}>
+            {releasedMovies.map((movie) => (
+              <GridListTile
+                key={movie.poster_url}
+                rows={1}
+                onClick={() => props.history.push("/movie/" + movie.id)}
+                key={"grid" + movie.id}
+              >
+                {/* <Link to={`/movie/${movie.id}`}> */}
+                <img
+                  className="movie-image"
+                  src={movie.poster_url}
+                  alt={movie.title}
+                  width="100%"
+                  height="100%"
+                />
+                <GridListTileBar
+                  title={movie.title}
+                  subtitle={
+                    <span>
+                      Release Date:{" "}
+                      {new Date(movie.release_date).toDateString()}
+                    </span>
+                  }
+                />
+                {/* </Link> */}
+              </GridListTile>
+            ))}
+          </GridList>
         </div>
+        {/* Grid of released movies ends */}
+
+        {/* Right side - Find movies by search starts */}
+        <div className="movie-filter">
+          <Card sx={{ minWidth: 240 }}>
+            <CardContent>
+              {/* <MuiThemeProvider theme={theme}> */}
+              <Typography variant="subheading" color="primary">
+                FIND MOVIES BY:
+              </Typography>
+              {/* </MuiThemeProvider> */}
+              <br />
+              <div>
+                <FormControl className="filter-forms">
+                  <FormControl>
+                    <InputLabel htmlFor="moviesName">Movie Name</InputLabel>
+                    <Input
+                      id="movieName"
+                      value={movieName}
+                      onChange={(e) => setMovieName(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel id="multiple-genre">Genres</InputLabel>
+                    <Select
+                      value={selectedGenre}
+                      multiple
+                      onChange={handleGenreChange}
+                      renderValue={(selectedGenre) => selectedGenre.join(" , ")}
+                    >
+                      {genreList.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          <ListItemIcon>
+                            <Checkbox
+                              checked={selectedGenre.indexOf(option) > -1}
+                            />
+                          </ListItemIcon>
+                          <ListItemText primary={option} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel id="mutiple-select-label">Artists</InputLabel>
+                    <Select
+                      multiple
+                      value={selectedArtist}
+                      onChange={handleChange}
+                      renderValue={(selected) => selected.join(", ")}
+                    >
+                      {artistsNameList.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          <ListItemIcon>
+                            <Checkbox
+                              checked={selectedArtist.indexOf(option) > -1}
+                            />
+                          </ListItemIcon>
+                          <ListItemText primary={option} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <br />
+                  <TextField
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={releaseDateStart}
+                    label="Release Date Start"
+                    placeholder="dd-mm-yyyy"
+                    onChange={(e) => setReleaseDateStart(e.target.value)}
+                  />{" "}
+                  <br />
+                  <TextField
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={releaseDateEnd}
+                    label="Release Date End"
+                    placeholder="dd-mm-yyyy"
+                    onChange={(e) => setReleaseDateEnd(e.target.value)}
+                  />
+                  <br />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={handleFilter}
+                  >
+                    APPLY
+                  </Button>
+                </FormControl>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        {/* Right side search filter ends */}
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 

@@ -5,12 +5,13 @@
     font-size: 1rem;
 }
 
-
-/* .gridHeightAdjuster {
-    height: 250px;
-} */
+.movie-poster {
+    height: 100%;
+    width: auto;
+}
 
 ul.custom-grid {
+    width: 100%;
     flex-wrap: nowrap;
 }
 

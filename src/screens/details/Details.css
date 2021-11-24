@@ -1,0 +1,42 @@
+.details {
+    text-align: left;
+}
+
+.back-button {
+    margin: 8px 0px 0px 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.details-page-flex-view {
+    display: flex;
+}
+
+.details-page-flex-view>div {
+    margin: 0px 16px;
+}
+
+.details-page-flex-view-left {
+    width: 20%;
+    text-align: center;
+}
+
+.details-page-flex-view-middle {
+    width: 60%;
+}
+
+.details-page-flex-view-right {
+    width: 20%;
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
+.margin-top-16 {
+    margin-top: 16px;
+}
+
+.margin-bottom-16 {
+    margin-bottom: 16px;
+}
