@@ -30,7 +30,7 @@ const theme = createMuiTheme;
 });
 
 const Home = (props) => {
-  const [movieList, setMovieList] = useState([]);
+  const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [movieName, setMovieName] = useState("");
   const [genreList, setGenreList] = useState([]);
   const [artistsNameList, setArtistNameList] = useState([]);
@@ -38,23 +38,33 @@ const Home = (props) => {
   const [selectedGenre, setSelectedGenre] = useState([]);
   const [releaseDateStart, setReleaseDateStart] = useState("");
   const [releaseDateEnd, setReleaseDateEnd] = useState("");
-  const [filteredMovie, setFilteredMovie] = useState([]);
+  const [releasedMovies, setReleasedMovies] = useState([]);
 
   useEffect(() => {
     async function checkTheResponse() {
-      //  Fetching movie list
-      const movieListUrl =
-        "http://localhost:8085/api/v1/movies/?page=1&limit=10";
-      const rawResponseMovieList = await fetch(movieListUrl, {
+      //  Fetching upcoming movies
+      const upcomingMoviesUrl = props.baseUrl + "movies?status=PUBLISHED";
+      const rawResponseUpcomingMovies = await fetch(upcomingMoviesUrl, {
         method: "GET",
         headers: {
           Accept: "application/json;charset=UTF-8",
         },
       });
-      const responseMovieList = await rawResponseMovieList.json();
-      setMovieList((arr) => [...arr, ...responseMovieList.movies]);
-      setFilteredMovie((arr) => [...arr, ...responseMovieList.movies]);
-      console.log(`Movie List: ${responseMovieList.movies}`);
+      const responseUpcomingMovies = await rawResponseUpcomingMovies.json();
+      setUpcomingMovies((arr) => [...arr, ...responseUpcomingMovies.movies]);
+      //console.log(`Movie List: ${responseUpcomingMovies.movies}`);
+
+      // fetch released movies
+      const releasedMoviesUrl = props.baseUrl + "movies?status=RELEASED";
+      const rawResponseReleasedMovies = await fetch(releasedMoviesUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json;charset=UTF-8",
+        },
+      });
+      const responseReleasedMovies = await rawResponseReleasedMovies.json();
+      setReleasedMovies((arr) => [...arr, ...responseReleasedMovies.movies]);
+      //console.log(`Movie List: ${responseReleasedMovies.movies}`);
 
       // Fetching movies by genre
       const movieByGenreUrl = "http://localhost:8085/api/v1/genres";
@@ -69,7 +79,7 @@ const Home = (props) => {
         return option.genre;
       });
       setGenreList((checker) => [...checker, ...genreNameArray]);
-      console.log(`Movie By Genre: ${genreNameArray}`);
+      //console.log(`Movie By Genre: ${genreNameArray}`);
 
       // Fetching movies by artist
       const movieByArtistUrl = "http://localhost:8085/api/v1/artists";
@@ -84,59 +94,46 @@ const Home = (props) => {
         return option.first_name + " " + option.last_name;
       });
       setArtistNameList((arr) => [...arr, ...artistNameArray]);
-      console.log(`Movie By Artist: ${artistNameArray}`);
+      //console.log(`Movie By Artist: ${artistNameArray}`);
     }
 
     checkTheResponse();
   }, []);
 
-  //filter handling
+  //filter results - Find Movie By
   const handleFilter = async () => {
-    setFilteredMovie(
-      movieList
-        .filter((movie) => movie.title.startsWith(movieName))
-        .filter((movie) => {
-          if (selectedGenre.length > 0)
-            return movie.genres.some((x) => selectedGenre.indexOf(x) > -1);
-          else return movie;
-        })
-        .filter((movie) => {
-          if (selectedArtist.length > 0 && movie.artists) {
-            return movie.artists.some(
-              (x) =>
-                selectedArtist.indexOf(x.first_name + " " + x.last_name) > -1
-            );
-          } else {
-            return movie;
-          }
-        })
-        .filter((movie) => {
-          let givenDate = new Date(releaseDateStart);
-          let movieDate = new Date(movie.release_date);
-          if (releaseDateStart.length > 0) {
-            if (givenDate < movieDate) {
-              return movie;
-            } else {
-              return null;
-            }
-          } else {
-            return movie;
-          }
-        })
-        .filter((movie) => {
-          let movieDate = new Date(movie.release_date);
-          let givenDate = new Date(releaseDateEnd);
-          if (releaseDateEnd.length > 0) {
-            if (givenDate > movieDate) {
-              return movie;
-            } else {
-              return null;
-            }
-          } else {
-            return movie;
-          }
-        })
+    let initialResponse = "?status=RELEASED";
+
+    if (movieName !== "") {
+      initialResponse += "&title=" + movieName;
+    }
+    if (selectedGenre.length > 0) {
+      initialResponse += "&genres=" + selectedGenre.toString();
+    }
+    if (selectedArtist.length > 0) {
+      initialResponse += "&artists=" + selectedArtist.toString();
+    }
+    if (releaseDateStart !== "") {
+      initialResponse += "&start_date=" + releaseDateStart;
+    }
+    if (releaseDateEnd !== "") {
+      initialResponse += "&end_date=" + releaseDateEnd;
+    }
+
+    const rawResponse = await fetch(
+      props.baseUrl + "movies" + encodeURI(initialResponse),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+        },
+      }
     );
+
+    const response = await rawResponse.json();
+    //console.log(response.movies);
+    setReleasedMovies(response.movies);
   };
 
   //handle changes in artist selection
@@ -168,40 +165,53 @@ const Home = (props) => {
       <div className="home-container">
         <Header baseUrl={props.baseUrl} />
 
-        <div className="homePageHeader">Upcoming Movies</div>
+        <div className="upcoming-movies-header">Upcoming Movies</div>
 
-        {/* Grid of upcoming movie starts */}
+        {/* Grid of upcoming movies starts */}
         <GridList className="custom-grid" cols={6} cellHeight={250}>
-          {movieList.map((tile) => (
+          {upcomingMovies.map((tile) => (
             <GridListTile key={tile.poster_url}>
               <img src={tile.poster_url} alt={tile.title} />
               <GridListTileBar title={tile.title} />
             </GridListTile>
           ))}
         </GridList>
-        {/* Grid of upcoming movie ends */}
+        {/* Grid of upcoming movies ends */}
 
-        {/* Grid of movies display starts */}
+        {/* Grid of released movies starts */}
         <div className="home-details">
           <div className="movie-display">
             <GridList cols={4} className="movie-home-grid" cellHeight={350}>
-              {filteredMovie.map((movie) => (
-                <GridListTile key={movie.poster_url} rows={1}>
-                  <Link to={`/movie/${movie.id}`}>
-                    <img
-                      className="movie-img"
-                      src={movie.poster_url}
-                      alt={movie.title}
-                      width="100%"
-                      height="100%"
-                    />
-                    <GridListTileBar title={movie.title} />
-                  </Link>
+              {releasedMovies.map((movie) => (
+                <GridListTile
+                  key={movie.poster_url}
+                  rows={1}
+                  onClick={() => props.history.push("/movie/" + movie.id)}
+                  key={"grid" + movie.id}
+                >
+                  {/* <Link to={`/movie/${movie.id}`}> */}
+                  <img
+                    className="movie-image"
+                    src={movie.poster_url}
+                    alt={movie.title}
+                    width="100%"
+                    height="100%"
+                  />
+                  <GridListTileBar
+                    title={movie.title}
+                    subtitle={
+                      <span>
+                        Release Date:{" "}
+                        {new Date(movie.release_date).toDateString()}
+                      </span>
+                    }
+                  />
+                  {/* </Link> */}
                 </GridListTile>
               ))}
             </GridList>
           </div>
-          {/* Grid of movies display starts */}
+          {/* Grid of released movies ends */}
 
           {/* Right side - Find movies by search starts */}
           <div className="movie-filter">
@@ -224,7 +234,7 @@ const Home = (props) => {
                       />
                     </FormControl>
                     <FormControl>
-                      <InputLabel id="multiple-genre">Genre</InputLabel>
+                      <InputLabel id="multiple-genre">Genres</InputLabel>
                       <Select
                         value={selectedGenre}
                         multiple
@@ -265,19 +275,21 @@ const Home = (props) => {
                         ))}
                       </Select>
                     </FormControl>
+                    <br />
                     <TextField
                       type="date"
                       InputLabelProps={{ shrink: true }}
                       value={releaseDateStart}
-                      label="Release date start"
+                      label="Release Date Start"
                       placeholder="dd-mm-yyyy"
                       onChange={(e) => setReleaseDateStart(e.target.value)}
-                    />
+                    />{" "}
+                    <br />
                     <TextField
                       type="date"
                       InputLabelProps={{ shrink: true }}
                       value={releaseDateEnd}
-                      label="Release date end"
+                      label="Release Date End"
                       placeholder="dd-mm-yyyy"
                       onChange={(e) => setReleaseDateEnd(e.target.value)}
                     />

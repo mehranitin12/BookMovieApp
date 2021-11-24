@@ -1,13 +1,14 @@
-.homePageHeader {
+.upcoming-movies-header {
     background-color: #ff9999;
     padding: 8px;
     text-align: center;
     font-size: 1rem;
 }
 
-.gridHeightAdjuster {
+
+/* .gridHeightAdjuster {
     height: 250px;
-}
+} */
 
 ul.custom-grid {
     flex-wrap: nowrap;
@@ -30,7 +31,7 @@ ul.movie-home-grid li {
     margin: 16px;
 }
 
-.movie-img {
+.movie-image {
     cursor: pointer;
 }
 
