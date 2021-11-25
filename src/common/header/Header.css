@@ -30,3 +30,8 @@
 .tabs {
     margin-bottom: 20px;
 }
+
+.bookshowBtn {
+    float: right;
+    margin-right: 8px;
+}

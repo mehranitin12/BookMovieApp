@@ -12,8 +12,7 @@ import YouTube from "react-youtube";
 import { Link } from "react-router-dom";
 
 const Details = (props) => {
-  const [Movie, setMovie] = useState({});
-  const [ratings, setRatings] = useState([
+  const ratingObject = [
     {
       id: 1,
       color: "black",
@@ -34,7 +33,10 @@ const Details = (props) => {
       id: 5,
       color: "black",
     },
-  ]);
+  ];
+
+  const [Movie, setMovie] = useState({});
+  const [ratings, setRatings] = useState(ratingObject);
 
   const youtubeVideo = {
     height: "300",

@@ -157,8 +157,8 @@ const Header = (props) => {
           </Button>
         )}
 
-        {props.showBookShowButton === "true" && !isLoggedIn ? (
-          <div className="bookshow-button">
+        {props.showBookShowButton === true && !isLoggedIn ? (
+          <div className="bookshowBtn">
             <Button
               variant="contained"
               color="primary"
@@ -171,8 +171,8 @@ const Header = (props) => {
           ""
         )}
 
-        {props.showBookShowButton === "true" && isLoggedIn ? (
-          <div className="bookshow-button">
+        {props.showBookShowButton === true && isLoggedIn ? (
+          <div className="bookshowBtn">
             <Link to={"/bookshow/" + props.id}>
               <Button variant="contained" color="primary">
                 Book Show
