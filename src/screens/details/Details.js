@@ -151,6 +151,7 @@ const Details = (props) => {
           {/* Middle part ends */}
           {/* Right part starts */}
           <div className="details-page-flex-view-right">
+            {/* Rate this movie section starts */}
             <Typography>
               <span className="bold-text">Rate this movie: </span>
             </Typography>
@@ -161,7 +162,8 @@ const Details = (props) => {
                 onClick={() => ratingsHandler(star.id)}
               />
             ))}
-
+            {/* Rate this movie section ends */}
+            {/* Artists section starts */}
             <div className="bold-text margin-bottom-16 margin-top-16">
               <Typography>
                 <span className="bold-text">Artists:</span>
@@ -183,6 +185,7 @@ const Details = (props) => {
                   ))}
               </GridList>
             </div>
+            {/* Artists section ends */}
           </div>
           {/* Right part ends */}
         </div>

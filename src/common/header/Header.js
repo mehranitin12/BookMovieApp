@@ -137,16 +137,7 @@ const Header = (props) => {
     <Fragment>
       <header className="navbar">
         <img src={logo} className="logo logo-animation" alt="logo" />
-        {isLoggedIn ? (
-          <Button
-            onClick={(e) => logoutHandler(e)}
-            className="login-logout-button"
-            color="default"
-            variant="contained"
-          >
-            Logout
-          </Button>
-        ) : (
+        {!isLoggedIn && (
           <Button
             onClick={(e) => setOpenLoginRegisterModal(true)}
             className="login-logout-button"
@@ -156,8 +147,18 @@ const Header = (props) => {
             Login
           </Button>
         )}
+        {isLoggedIn && (
+          <Button
+            onClick={(e) => logoutHandler(e)}
+            className="login-logout-button"
+            color="default"
+            variant="contained"
+          >
+            Logout
+          </Button>
+        )}
 
-        {props.showBookShowButton === true && !isLoggedIn ? (
+        {props.showBookShowButton === true && !isLoggedIn && (
           <div className="bookshowBtn">
             <Button
               variant="contained"
@@ -167,11 +168,9 @@ const Header = (props) => {
               Book Show
             </Button>
           </div>
-        ) : (
-          ""
         )}
 
-        {props.showBookShowButton === true && isLoggedIn ? (
+        {props.showBookShowButton === true && isLoggedIn && (
           <div className="bookshowBtn">
             <Link to={"/bookshow/" + props.id}>
               <Button variant="contained" color="primary">
@@ -179,8 +178,6 @@ const Header = (props) => {
               </Button>
             </Link>
           </div>
-        ) : (
-          ""
         )}
       </header>
       <Modal
